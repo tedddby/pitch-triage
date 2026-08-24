@@ -4,10 +4,10 @@ Inbound reply triage for a PR consultancy. A journalist replies to a pitch; this
 reads the reply, decides what should happen to it, drafts a response, and puts
 the whole thing in front of a human. Nothing sends automatically.
 
-Built in two evenings with [Claude Code](https://claude.com/claude-code) doing
-most of the typing. [`SPEC.md`](SPEC.md) is the spec I wrote before any code
-existed. [`AI-LOG.md`](AI-LOG.md) is the honest record of how I directed it and
-the three things it got wrong.
+Built with [Claude Code](https://claude.com/claude-code) doing most of the
+typing. [`SPEC.md`](SPEC.md) is the spec I wrote before any code existed.
+[`AI-LOG.md`](AI-LOG.md) is the honest record of how I directed it and the three
+things it got wrong.
 
 ---
 
