@@ -83,6 +83,10 @@ export interface TriageResult {
   locked_by_rule: boolean;
   rule_matched: string | null;
   model_intent: Intent | null;
+  /** Rule and model reached different verdicts — worth a reviewer's attention first. */
+  disagreement: boolean;
+  /** Set when the model call failed and a rule carried the decision alone. */
+  model_error: string | null;
   requires_review: true;
 }
 
