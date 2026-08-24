@@ -90,7 +90,7 @@ describe("applyRules — auto-reply detection", () => {
 
   for (const body of autos) {
     it(`locks to auto_reply: ${JSON.stringify(body.slice(0, 40))}`, () => {
-      expect(applyRules(reply(body)).intent).toBe("auto_reply");
+      expect(applyRules(reply(body))?.intent).toBe("auto_reply");
     });
   }
 
