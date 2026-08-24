@@ -9,7 +9,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "eval": "tsx evals/run-eval.ts"
+    "eval": "tsx evals/run-eval.ts",
+    "eval:rules": "tsx evals/run-eval.ts --rules-only"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.72.0",

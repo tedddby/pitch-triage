@@ -78,7 +78,12 @@ const AUTO_REPLY_PATTERNS: Array<[string, RegExp]> = [
   ["auto-reply", /\bauto-?reply\b/i],
   ["automated", /\b(this\s+is\s+an\s+)?automated\s+(reply|response|message)\b/i],
   ["away-from-desk", /\baway\s+from\s+(my\s+)?desk\b/i],
-  ["annual-leave", /\bon\s+(annual\s+)?leave\b/i],
+  // Narrowed from /on (annual )?leave/ after the eval caught it locking
+  // "I'm on leave from tomorrow, send this again in March" — a human reply
+  // deferring the pitch — to auto_reply. Absence wording is weak evidence of a
+  // machine sender, so this now demands the full stock phrase and the model
+  // handles anything looser. See AI-LOG.md.
+  ["annual-leave", /\bon\s+annual\s+leave\b/i],
   ["currently-away", /\b(i\s*'?m|i\s+am)\s+currently\s+away\b/i],
 ];
 
