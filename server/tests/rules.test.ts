@@ -116,3 +116,21 @@ describe("applyRules — precedence", () => {
     expect(applyRules(reply("Can you send me the embargo date?"))).toBeNull();
   });
 });
+
+describe("applyRules — regressions found by the eval harness", () => {
+  it("does not treat a human deferral that mentions leave as an auto-reply", () => {
+    // The eval caught this: /on (annual )?leave/ locked a real reply to
+    // auto_reply, and a rule lock cannot be undone by the model.
+    const match = applyRules(
+      reply("I'm on leave from tomorrow, send this again in March."),
+    );
+    expect(match).toBeNull();
+  });
+
+  it("still catches the stock annual-leave auto-reply", () => {
+    const match = applyRules(
+      reply("I am on annual leave and will respond on my return."),
+    );
+    expect(match?.intent).toBe("auto_reply");
+  });
+});
