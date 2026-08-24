@@ -6,7 +6,7 @@ the whole thing in front of a human. Nothing sends automatically.
 
 Built with [Claude Code](https://claude.com/claude-code) doing most of the
 typing. [`SPEC.md`](SPEC.md) is the spec I wrote before any code existed.
-[`AI-LOG.md`](AI-LOG.md) is the honest record of how I directed it and the three
+[`AI-LOG.md`](AI-LOG.md) is the honest record of how I directed it and the four
 things it got wrong.
 
 ---

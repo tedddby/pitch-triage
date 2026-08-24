@@ -1,7 +1,7 @@
 # How this was built, and what the AI got wrong
 
 Claude Code did most of the typing. This is the record of what I asked for, what
-came back, and the three things I had to catch. It is the part of the exercise I
+came back, and the four things I had to catch. It is the part of the exercise I
 think actually matters — anyone can get an LLM to produce a working app; the
 question is whether you noticed what it got wrong.
 
@@ -110,6 +110,41 @@ Two things came out of this that I kept:
 **Fix:** `3b9d3cf` — a dependency bump, no source change. The whole bug was a
 version.
 
+## Mistake 4 — the same lesson again, immediately
+
+I fixed mistake 3, moved on, and walked straight into its sibling.
+
+`npm run eval` reported **28.6% accuracy** and **"FAIL: 2 missed opt-outs"**. Read
+plainly, that says the classifier is broken. It wasn't. Every model call had
+failed with *"could not resolve authentication method"*, and the only cases that
+scored were the twelve the rules resolve without the model at all.
+
+Two separate bugs behind one confusing number:
+
+1. `dotenv/config` resolves `.env` against `process.cwd()`. npm workspace scripts
+   run with cwd set to the *workspace* directory, so `npm run eval` from the repo
+   root looked for `server/.env` — while `.env.example`, and my own README
+   instruction to copy it, both point at the repo root. The file would have been
+   sitting right there and dotenv would never have seen it.
+2. The eval had no credential check, so instead of refusing to run it produced a
+   confident, precise, completely meaningless score.
+
+The second is the worse bug. A harness whose entire job is telling you whether
+you can trust the system reported a specific number for a run in which the system
+under test never executed.
+
+I'd missed the first one because every time I'd exercised the API path myself, I'd
+passed the key inline as an environment variable. So `dotenv` — the mechanism a
+real user hits on their first run — was never once executed. Same shape as mistake
+3: the part I never actually ran was the part that was broken.
+
+`env.ts` now resolves from the module's own location rather than cwd and reads
+either location, and the eval fails fast with an actionable message instead of
+scoring a run that didn't happen.
+
+**Found by:** running the eval as a first-time user would. **Fix:**
+`server/src/env.ts` and the guard at the top of `runFull`.
+
 ---
 
 ## What I'd tell you in an interview
@@ -120,7 +155,7 @@ draft would have been. The failure mode is that it writes *confident, internally
 consistent* code, and it will happily write the tests that agree with it. Both
 artefacts share the same assumptions, so the tests can't see past them.
 
-All three mistakes above were caught by something outside that loop: a compiler,
+All four mistakes above were caught by something outside that loop: a compiler,
 a dataset written from the problem instead of the solution, and running the thing
 for real. That's where I ended up spending my attention, and it's the habit I'd
 bring to a codebase where AI is doing most of the typing.

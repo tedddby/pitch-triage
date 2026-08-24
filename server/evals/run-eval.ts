@@ -15,7 +15,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import "dotenv/config";
+import "../src/env.js";
 import { z } from "zod";
 import { applyRules } from "../src/rules.js";
 import { createClaudeClassifier } from "../src/classify.js";
@@ -178,6 +178,24 @@ function runRulesOnly(cases: EvalCase[]): number {
 }
 
 async function runFull(cases: EvalCase[]): Promise<number> {
+  // Fail fast rather than reporting a meaningless score. Without credentials
+  // every model call errors, only the rule-locked cases resolve, and the summary
+  // reads "28.6% accuracy, 2 missed opt-outs" — which blames the classifier for
+  // a missing config file.
+  if (!process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_AUTH_TOKEN) {
+    console.error(
+      [
+        "No ANTHROPIC_API_KEY found.",
+        "",
+        "The full eval calls the real model. Copy .env.example to .env in the",
+        "repo root, add your key, then run this again.",
+        "",
+        "For the offline guardrail gate, which needs no key: npm run eval:rules",
+      ].join("\n"),
+    );
+    return 1;
+  }
+
   const model = process.env.TRIAGE_MODEL ?? "claude-opus-5";
   console.log(`Full eval over ${cases.length} cases using ${model}.\n`);
 
