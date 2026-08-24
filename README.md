@@ -100,11 +100,36 @@ checks three release gates from the spec:
 
 Failing any gate exits non-zero.
 
-`npm run eval:rules` is the version CI runs on every push. It needs no key and
+`npm run eval:rules` is the offline gate. It needs no key and no spend, and
 asserts one thing: **the deterministic rules never lock a reply to the wrong
 intent.** That property matters more than it sounds — a false lock cannot be
 fixed downstream, because the model is not allowed to unlock a rule verdict. It
 caught a real bug (see [`AI-LOG.md`](AI-LOG.md)).
+
+Every check, run against the commit you are reading:
+
+```
+$ npm run typecheck
+(clean, exit 0)
+
+$ npm test
+ Test Files  3 passed (3)
+      Tests  43 passed (43)
+
+$ npm run eval:rules
+Rules-only eval over 42 cases (no API calls).
+
+Locked by a rule:         12/42
+Opt-outs caught by rules: 6/8 (the rest must be caught by the model)
+False locks:              0
+
+PASS - no rule locks a reply to the wrong intent.
+```
+
+There is no CI workflow in this repo. `eval:rules`, `test` and `typecheck` are
+all designed to run without credentials precisely so they *can* be a pre-merge
+gate — wiring them to a runner is a two-file change I would make on day one of
+working somewhere that has one.
 
 ### Measured result
 
