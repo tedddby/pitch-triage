@@ -106,6 +106,46 @@ intent.** That property matters more than it sounds — a false lock cannot be
 fixed downstream, because the model is not allowed to unlock a rule verdict. It
 caught a real bug (see [`AI-LOG.md`](AI-LOG.md)).
 
+### Measured result
+
+`claude-opus-5`, 42 cases, all three gates passing:
+
+```
+intent          support  precision  recall   f1
+interested      8        87.5%      87.5%    87.5%
+needs_info      7        85.7%      85.7%    85.7%
+not_now         6        100.0%     100.0%   100.0%
+not_relevant    7        100.0%     100.0%   100.0%
+unsubscribe     8        100.0%     100.0%   100.0%
+auto_reply      6        100.0%     100.0%   100.0%
+
+Overall accuracy: 95.2% (40/42)
+
+PASS  zero missed opt-outs           (0 missed)
+PASS  no auto-reply read as human    (0 misread)
+PASS  accuracy >= 85.0%              (95.2%)
+```
+
+The shape matters more than the headline. `unsubscribe` — the only class with
+legal consequences — is 8/8. `auto_reply` is 6/6, including the out-of-office
+that says *"this sounds great, do email me again"*.
+
+Both errors fall on the same boundary, `interested` ↔ `needs_info`:
+
+- *"I could use this for a piece I'm already writing. What's the embargo?"* —
+  labelled `interested`, classified `needs_info`. They are committing and the
+  question is secondary. A real miss.
+- *"Do you have images we can use?"* — labelled `needs_info`, classified
+  `interested`. "images **we can use**" presupposes they are running it. I now
+  think the model was right and my label was wrong.
+
+I have deliberately not tuned the prompt to clear these. One of the two is a
+defect in my labelling rather than in the classifier, and forcing 42/42 on a set
+this size is overfitting to the test. The distinction also costs little
+operationally — both intents route to a human with a draft attached. The classes
+where an error is expensive are the ones sitting at 100%, which is the result the
+design was aiming at.
+
 ---
 
 ## What ships dark
