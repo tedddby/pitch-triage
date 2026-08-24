@@ -3,14 +3,20 @@
   "private": true,
   "version": "0.1.0",
   "description": "Inbound pitch-reply triage for a PR consultancy, with a human-review gate and an eval harness.",
-  "workspaces": ["server", "web"],
+  "workspaces": [
+    "server",
+    "web"
+  ],
   "scripts": {
     "dev": "npm run dev --workspace server",
     "dev:web": "npm run dev --workspace web",
     "build": "npm run build --workspace server && npm run build --workspace web",
     "typecheck": "npm run typecheck --workspace server",
     "test": "npm run test --workspace server",
-    "eval": "npm run eval --workspace server"
+    "eval": "npm run eval --workspace server",
+    "eval:rules": "npm run eval:rules --workspace server"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  }
 }
